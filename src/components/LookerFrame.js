@@ -4,6 +4,8 @@ import {map, isEmpty, isEqual, find} from 'lodash'
 import './LookerFrame.css'
 
 const DEFAULT_THEME='arielle_test'
+const FRAME_ID='looker'
+const INSTANCE='https://johnkuitheme.dev.looker.com'
 
 export class LookerFrame extends Component {
   constructor(props) {
@@ -68,7 +70,7 @@ export class LookerFrame extends Component {
           if (event.origin === window.location.origin) {
             const data = JSON.parse(event.data)
             if (data) {
-              // console.log({type: data.type, data: data})
+              console.log({type: data.type, data: data})
               if (data.dashboard) { this.messageDashboard(data.dashboard) }
               if (data.page) { this.messagePage(data.page) }
               if (data.height) { this.messageHeight(data.height) }
@@ -81,6 +83,31 @@ export class LookerFrame extends Component {
     });
   }
   componentDidMount() {}
+
+  componentDidUpdate(prevProps,pstate) {
+    const {props} = this;
+    if ( prevProps && prevProps.messages && prevProps.messages.dashboard && prevProps.messages.dashboard.options
+      &&  props &&  props.messages &&  props.messages.dashboard &&  props.messages.dashboard.options) {
+
+      const poptions = prevProps.messages.dashboard.options
+      const {options} = props.messages.dashboard
+      const {dashboard} = props.messages
+
+      // console.log({options: options, poptions: poptions})
+      if (!isEqual(poptions, options)) {
+        var my_request = objectDeepDiff(options, poptions)
+        var my_iframe = document.getElementById(FRAME_ID);
+        my_request.type = 'dashboard:options:set'
+
+        console.log(my_request)
+        my_iframe.contentWindow.postMessage(JSON.stringify(my_request), INSTANCE);
+      }
+    }
+  }
+
+  updateRunDashboard() {
+
+  }
   
   render() {
     const {height} = this.props.messages
@@ -90,7 +117,7 @@ export class LookerFrame extends Component {
     return (
       <>
         <iframe
-          id="looker"
+          id={FRAME_ID}
           src={urlBuilder(id,type,filters)}
           onLoad={this.init}
           style={{height: (height)? String(height)+'px' : ''}}
@@ -110,6 +137,19 @@ const urlBuilder = (id, type, filters) => {
     }).join('&');
   }
   return `/embed/${type}s-next/${id}?embed_domain=${origin}&theme=${DEFAULT_THEME}&${qq}`
+}
 
-  
+const objectDeepDiff = (data, oldData) => {
+  const record = {};
+  Object.keys(data).forEach((key) => {
+    // Checks that isn't an object and isn't equal
+    if (!(typeof data[key] === "object" && _.isEqual(data[key], oldData[key]))) {
+      record[key] = data[key];
+    }
+    // If is an object, and the object isn't equal
+    if ((typeof data[key] === "object" && !_.isEqual(data[key], oldData[key]))) {
+      record[key] = objectDeepDiff(data[key], oldData[key]);
+    }
+  });
+  return record;
 }

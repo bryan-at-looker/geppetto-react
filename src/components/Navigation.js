@@ -13,9 +13,12 @@ export class Navigation extends Component {
         ["Looks", "/looks"],
         ["Explores", "/explores"],
         ["Random theme", "/randomtheme"],
+        ["Hide Titles", "/hidetitles"],
         ["Hide Tiles", "/hidetiles"],
+        ["Change Titles","/changetitles"],
         ["Tabbed Dashboards","/tabbeddashboards"],
-        ["Change Viz","/changeviz"]
+        ["Change Viz","/changeviz"],
+        ["Update Text","/updatetext"],
       ]
     }
   }
@@ -23,6 +26,7 @@ export class Navigation extends Component {
 
   handleItemClick = (e, data ) => { 
     this.setState({ activeItem: data.to })
+    this.props.updateApp({messages: {}})
   }
 
   menuItem = (items) => {

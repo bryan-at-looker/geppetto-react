@@ -10,7 +10,7 @@ const CONTENT = {
   filters: {}
 }
 
-export class HideTiles extends Component {
+export class HideTitles extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,9 +35,9 @@ export class HideTiles extends Component {
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
+        options[kys[i]].title_hidden = true;
       } else {
-        options[kys[i]].visible = false;
+        options[kys[i]].title_hidden = false;
       }
     }
     this.props.updateApp({messages: messages})
@@ -52,9 +52,9 @@ export class HideTiles extends Component {
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
+        options[kys[i]].title_hidden = true;
       } else {
-        options[kys[i]].visible = false;
+        options[kys[i]].title_hidden = false;
       }
     }
     this.props.updateApp({messages: messages})
@@ -90,7 +90,7 @@ export class HideTiles extends Component {
     })
 
     const value = filter(tileArray, o => { 
-        return o.visible 
+        return o.title_hidden 
       }).map(tile => {
         return tile.id
     })

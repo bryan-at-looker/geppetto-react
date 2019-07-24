@@ -10,9 +10,12 @@ import { HomeRoute } from './HomeRoute';
 import { ComingSoon } from './components/ComingSoon';
 import { ExploreRoute } from './components/ExploreRoute';
 import { RandomTheme } from './components/RandomThemeRoute';
-import { HideTiles } from './components/HideTilesRoute';
+import { HideTitles } from './components/HideTitlesRoute';
 import { TabbedDashboards } from './components/TabbedDashboardsRoute';
 import { ChangeVisualization } from './components/ChangeVisualizationRoute';
+import { ChangeTitles } from './components/ChangeTitlesRoute';
+import { HideTiles } from './components/HideTilesRoute';
+import { UpdateText } from './components/UpdateTextRoute';
 
 
 
@@ -49,11 +52,12 @@ class App extends Component {
   
   render() {
     const {content, dashboards, messages} = this.state
+    
     return (
       <>
         
         <Router basename={'/applications/'+window.lookerMetadata.app.id}>
-          <Navigation></Navigation>
+          <Navigation updateApp={this.updateApp}></Navigation>
           <Route path='/' exact component={HomeRoute} />            
           <Route path="/dashboards"
           render={() => <DashboardRoute content={content} dashboards={dashboards} messages={messages} updateApp={this.updateApp}/>} />
@@ -61,8 +65,14 @@ class App extends Component {
           <Route path='/explores' component={ComingSoon} />      
           <Route path='/randomtheme'
           render={() => <RandomTheme content={content} messages={messages} updateApp={this.updateApp}/>} />
+          <Route path='/hidetitles'
+          render={() => <HideTitles  messages={messages} updateApp={this.updateApp}/>} />
           <Route path='/hidetiles'
-          render={() => <HideTiles content={content} messages={messages} updateApp={this.updateApp}/>} />
+          render={() => <HideTiles  messages={messages} updateApp={this.updateApp}/>} />
+          <Route path='/changetitles'
+          render={() => <ChangeTitles  messages={messages} updateApp={this.updateApp}/>} />
+          <Route path='/updatetext'
+          render={() => <UpdateText  messages={messages} updateApp={this.updateApp}/>} />
           <Route path='/tabbeddashboards'
           render={() => <TabbedDashboards content={content} messages={messages} updateApp={this.updateApp}/>} />
           <Route path='/changeviz'

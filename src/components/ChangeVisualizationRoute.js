@@ -46,7 +46,7 @@ export class ChangeVisualization extends Component {
   render() {
     const {props} = this
     const {dashboard, viz_configs} = this.state
-    console.log(viz_configs)
+    // console.log(viz_configs)
     return (
       <>
         <Icon name='random' size='huge' onClick={this.randomize}/>

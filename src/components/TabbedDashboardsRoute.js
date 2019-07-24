@@ -51,7 +51,7 @@ export class TabbedDashboards extends Component {
         activeIndex: active_index
       }
     })
-    console.log(selected_elements)
+    
     return (
       <>
        <Segment id="segclass" placeholder>

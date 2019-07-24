@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
 import { api31Call } from '../helpers';
-import { Icon, Dropdown } from 'semantic-ui-react'
+import { Icon, Dropdown, Button, TextArea, Popup } from 'semantic-ui-react'
 import { LookerFrame } from './LookerFrame';
 import {sample, filter} from 'lodash'
 
 const CONTENT = {
-  id: '17',
+  id: '18',
   type: 'dashboard',
   filters: {}
 }
 
-export class HideTiles extends Component {
+export class UpdateText extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -74,6 +74,13 @@ export class HideTiles extends Component {
 
   }
   componentDidMount() {}
+
+  changeTile = () => {
+    var messages = this.props.messages
+    messages.dashboard.options[140].vis_config.body_text_as_html = 'YOYO'
+    this.props.updateApp({messages: messages});
+    console.log(messages.dashboard.options)
+  }
   
   render() {
     const {props} = this
@@ -89,27 +96,23 @@ export class HideTiles extends Component {
       return { key: tile.id, text: tile.title, value: tile.id}
     })
 
-    const value = filter(tileArray, o => { 
-        return o.visible 
+    const text_tiles = filter(tileArray, o => { 
+        return ( o.vis_config && o.vis_config.type && o.vis_config.type == 'text' )
       }).map(tile => {
-        return tile.id
+        return (
+          <Popup
+          content='I will render.'
+          on='click'
+          key={tile.id}
+          trigger={<Button>Hello</Button>}>
+          </Popup>
+        )
     })
 
     return (
       <>
-        <Icon name='random' size='huge' onClick={this.selectRandom}/>
-        <Dropdown
-            selection
-            multiple={multiple}
-            search={search}
-            options={options}
-            value={value}
-            placeholder='Hide These Titles'
-            onChange={this.handleChange}
-            onSearchChange={this.handleSearchChange}
-            disabled={isFetching}
-            loading={isFetching}
-          />
+        {text_tiles}
+        <Icon name="random" onClick={this.changeTile}></Icon>
         <LookerFrame content={CONTENT} {...props}></LookerFrame>
       </>
     )

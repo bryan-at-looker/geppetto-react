@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { api31Call } from '../helpers';
-import { Icon, Dropdown } from 'semantic-ui-react'
+import { Icon, Dropdown, Button, Popup } from 'semantic-ui-react'
 import { LookerFrame } from './LookerFrame';
 import {sample, filter} from 'lodash'
 
@@ -10,7 +10,7 @@ const CONTENT = {
   filters: {}
 }
 
-export class HideTiles extends Component {
+export class ChangeTitles extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,9 +35,9 @@ export class HideTiles extends Component {
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
+        options[kys[i]].title_hidden = true;
       } else {
-        options[kys[i]].visible = false;
+        options[kys[i]].title_hidden = false;
       }
     }
     this.props.updateApp({messages: messages})
@@ -52,9 +52,9 @@ export class HideTiles extends Component {
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
+        options[kys[i]].title_hidden = true;
       } else {
-        options[kys[i]].visible = false;
+        options[kys[i]].title_hidden = false;
       }
     }
     this.props.updateApp({messages: messages})
@@ -74,6 +74,28 @@ export class HideTiles extends Component {
 
   }
   componentDidMount() {}
+
+  rotateVis = () => {
+    var messages = JSON.parse(JSON.stringify(this.props.messages))
+    console.log(this.props.messages.dashboard.options)
+    var options = messages.dashboard.options
+    const elements = Object.keys(options);
+    const copy_options = JSON.parse(JSON.stringify(options))
+    for (var i=0; i< elements.length; i++) {
+      console.log(options[elements[i]].vis_config.type, copy_options[elements[0]].vis_config.type)
+      if (i==elements.length-1) {
+        options[elements[i]].vis_config.type = copy_options[elements[0]].vis_config.type
+        // options[elements[i]].title_hidden = false
+
+      } else {
+        options[elements[i]].vis_config.type = copy_options[elements[i+1]].vis_config.type
+        // options[elements[i]].title_hidden = false
+      }
+      console.log(options[elements[i]].vis_config.type, copy_options[elements[0]].vis_config.type)
+    }
+    console.log(options)
+    this.props.updateApp({messages: messages})
+  }
   
   render() {
     const {props} = this
@@ -90,26 +112,28 @@ export class HideTiles extends Component {
     })
 
     const value = filter(tileArray, o => { 
-        return o.visible 
+        return o.title_hidden 
       }).map(tile => {
         return tile.id
     })
 
+    console.log(tiles)
+
+    const all_vises =  Object.keys(tiles).map(tile => {
+      return tiles[tile].vis_config.type || 'looker_table'
+    })
+
+    const buttons = Object.keys(tiles).map(tile => {
+      return   <Button
+      key = {tile}
+      content={tiles[tile].title}
+      onClick = {this.rotateVis}
+    />
+    })
+
     return (
-      <>
-        <Icon name='random' size='huge' onClick={this.selectRandom}/>
-        <Dropdown
-            selection
-            multiple={multiple}
-            search={search}
-            options={options}
-            value={value}
-            placeholder='Hide These Titles'
-            onChange={this.handleChange}
-            onSearchChange={this.handleSearchChange}
-            disabled={isFetching}
-            loading={isFetching}
-          />
+      <>   
+        <Icon name='refresh' size='huge' onClick={this.rotateVis}/>        
         <LookerFrame content={CONTENT} {...props}></LookerFrame>
       </>
     )
