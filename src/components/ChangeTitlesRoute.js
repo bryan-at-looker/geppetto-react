@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import { api31Call } from '../helpers';
-import { Icon, Dropdown, Button, Popup } from 'semantic-ui-react'
+import { Icon, Dropdown, Button, Popup, Input } from 'semantic-ui-react'
 import { LookerFrame } from './LookerFrame';
 import {sample, filter} from 'lodash'
 
 const CONTENT = {
-  id: '17',
+  id: '19',
   type: 'dashboard',
   filters: {}
 }
@@ -14,10 +14,7 @@ export class ChangeTitles extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isFetching: false,
-      multiple: true,
-      search: true,
-      searchQuery: null
+      editing: false
     }
   }
 
@@ -75,65 +72,66 @@ export class ChangeTitles extends Component {
   }
   componentDidMount() {}
 
-  rotateVis = () => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages))
-    console.log(this.props.messages.dashboard.options)
-    var options = messages.dashboard.options
-    const elements = Object.keys(options);
-    const copy_options = JSON.parse(JSON.stringify(options))
-    for (var i=0; i< elements.length; i++) {
-      console.log(options[elements[i]].vis_config.type, copy_options[elements[0]].vis_config.type)
-      if (i==elements.length-1) {
-        options[elements[i]].vis_config.type = copy_options[elements[0]].vis_config.type
-        // options[elements[i]].title_hidden = false
+  edit = (tiles,editing) => {
 
-      } else {
-        options[elements[i]].vis_config.type = copy_options[elements[i+1]].vis_config.type
-        // options[elements[i]].title_hidden = false
-      }
-      console.log(options[elements[i]].vis_config.type, copy_options[elements[0]].vis_config.type)
+    if (!editing) {
+      this.setState({
+        editing: !editing,
+        tiles: tiles
+      })
+    } else {
+      this.setState({editing: !editing})
     }
-    console.log(options)
-    this.props.updateApp({messages: messages})
+  }
+
+  changeText = (event, data) => {
+    var {tiles} = this.state
+    tiles[data.id].title = data.value
+    this.setState({tiles: tiles})
+
+    var messages = JSON.parse(JSON.stringify(this.props.messages));
+    messages.dashboard.options[data.id].title = data.value
+    this.props.updateApp({messages: messages});
   }
   
   render() {
     const {props} = this
     const tiles = (props.messages && props.messages.dashboard && props.messages.dashboard.options) ? props.messages.dashboard.options : []
-    const {hidden_tiles} = this.state
+    const {hidden_tiles, editing } = this.state
     const { multiple, isFetching, search } = this.state
 
     const tileArray = Object.keys(tiles).map(tile => {
       return Object.assign({ id: tile}, tiles[tile])
     })
 
+    const keys = Object.keys(tiles)
+
     const options = tileArray.map(tile => {
       return { key: tile.id, text: tile.title, value: tile.id}
     })
-
-    const value = filter(tileArray, o => { 
-        return o.title_hidden 
-      }).map(tile => {
-        return tile.id
-    })
-
-    console.log(tiles)
 
     const all_vises =  Object.keys(tiles).map(tile => {
       return tiles[tile].vis_config.type || 'looker_table'
     })
 
-    const buttons = Object.keys(tiles).map(tile => {
-      return   <Button
-      key = {tile}
-      content={tiles[tile].title}
-      onClick = {this.rotateVis}
-    />
-    })
+    var inputboxes = <div></div>
+    console.log(tiles)
+    if (keys.length > 0 ) {
+      
+      inputboxes = keys.map(tile => {
+        return   <Input
+        key = {tile}
+        id = {tile}
+        onChange = {this.changeText}
+        value = {(this.state.tiles &&  this.state.tiles[tile] && this.state.tiles[tile].title) ? this.state.tiles[tile].title : '' }
+      />
+      })
+    }
 
     return (
-      <>   
-        <Icon name='refresh' size='huge' onClick={this.rotateVis}/>        
+      <>
+      <Icon name="edit" size='huge' onClick={() => {this.edit(tiles,this.state.editing)}}></Icon>        
+      { (editing) && inputboxes} 
         <LookerFrame content={CONTENT} {...props}></LookerFrame>
       </>
     )

@@ -75,9 +75,11 @@ export class UpdateText extends Component {
   }
   componentDidMount() {}
 
-  changeTile = () => {
-    var messages = this.props.messages
-    messages.dashboard.options[140].vis_config.body_text_as_html = 'YOYO'
+  changeBody = (event, data) => {
+    var {value} = data
+    this.setState({text: value})
+    var messages = JSON.parse(JSON.stringify(this.props.messages));
+    messages.dashboard.options[data.id].vis_config.body_text_as_html = value
     this.props.updateApp({messages: messages});
     console.log(messages.dashboard.options)
   }
@@ -98,13 +100,15 @@ export class UpdateText extends Component {
 
     const text_tiles = filter(tileArray, o => { 
         return ( o.vis_config && o.vis_config.type && o.vis_config.type == 'text' )
-      }).map(tile => {
+      }).map((tile) => {
+        console.log(tile)
         return (
           <Popup
-          content='I will render.'
-          on='click'
-          key={tile.id}
-          trigger={<Button>Hello</Button>}>
+            on='click'
+            key={tile.id}
+            onClick={() => {this.setState({text: tile.vis_config.body_text_as_html}) }}
+            trigger={<Button>Tile: {tile.id}</Button>}>
+          <TextArea id={tile.id} onChange={this.changeBody} value={this.state.text}></TextArea>
           </Popup>
         )
     })
@@ -112,7 +116,6 @@ export class UpdateText extends Component {
     return (
       <>
         {text_tiles}
-        <Icon name="random" onClick={this.changeTile}></Icon>
         <LookerFrame content={CONTENT} {...props}></LookerFrame>
       </>
     )

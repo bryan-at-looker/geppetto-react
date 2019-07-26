@@ -9,20 +9,20 @@ export class Navigation extends Component {
     this.state = {
       items: [
         ["Home", "/"],
-        ["Dashboards", "/dashboards"],
-        ["Looks", "/looks"],
-        ["Explores", "/explores"],
-        ["Random theme", "/randomtheme"],
-        ["Hide Titles", "/hidetitles"],
-        ["Hide Tiles", "/hidetiles"],
+        ["Hide / Show Titles", "/hidetitles"],
         ["Change Titles","/changetitles"],
-        ["Tabbed Dashboards","/tabbeddashboards"],
-        ["Change Viz","/changeviz"],
+        ["Hide / Show Tiles", "/hidetiles"],
         ["Update Text","/updatetext"],
+        ["Change Viz","/changeviz"],
       ]
     }
   }
 
+  // ["Random theme", "/randomtheme"],
+  // ["Dashboards", "/dashboards"],
+  // ["Looks", "/looks"],
+  // ["Explores", "/explores"],
+  // ["Tabbed Dashboards","/tabbeddashboards"],
 
   handleItemClick = (e, data ) => { 
     this.setState({ activeItem: data.to })
