@@ -1,4 +1,4 @@
-module.exports = {
+  module.exports = {
   devServer: {
     host: "localhost",
     port: 8080,
@@ -13,7 +13,9 @@ module.exports = {
   entry: ['babel-polyfill', './src/index.js'],
 
   output: {
-    filename: 'main.js'       
+    filename: 'main.js',
+    chunkFilename: '[name].main.js',   
+    publicPath: 'https://localhost:8080/',    
   },
   module: {
     rules: [

@@ -10,7 +10,7 @@ const CONTENT = {
   filters: {}
 }
 
-export class ChangeVisualization extends Component {
+export default class ChangeVisualization extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -45,11 +45,7 @@ export class ChangeVisualization extends Component {
   componentDidMount() {}
 
   rotateVis = () => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages))
-    var options = messages.dashboard.options
-    if (!this.state.options) {
-      this.setState({options: options})
-    }
+    var options = JSON.parse(JSON.stringify(this.props.options))
     
     const elements = Object.keys(options);
     const copy_options = JSON.parse(JSON.stringify(options))
@@ -58,46 +54,19 @@ export class ChangeVisualization extends Component {
       new_options[elements[i]] = {vis_config: {}}
       if (i==elements.length-1) {
         new_options[elements[i]].vis_config.type = copy_options[elements[0]].vis_config.type
-        // options[elements[i]].title_hidden = false
-
       } else {
         new_options[elements[i]].vis_config.type = copy_options[elements[i+1]].vis_config.type
-        // options[elements[i]].title_hidden = false
       }
     }
-    messages.dashboard.options = new_options
-    this.props.updateApp({messages: messages})
+    options = new_options
+    this.props.updateApp({options: options})
   } 
 
   
   
   render() {
     const {props} = this
-    const {dashboard, options} = this.state
-    // console.log(viz_configs)
 
-    const tiles = (props.messages && props.messages.dashboard && props.messages.dashboard.options) ? props.messages.dashboard.options : []
-    const keys = Object.keys(options || tiles)
-    // console.log(options)
-    // if (options) {
-    //   var inputboxes = null
-      
-    
-    //   if (keys.length > 0 ) {
-        
-    //     inputboxes = keys.map(tile => {
-    //       return   <Button
-    //       key = {tile}
-    //       id = {tile}
-    //       onClick = {this.changeToTable}
-    //     >{(options &&  options[tile] && options[tile].title) ? options[tile].title : '' }
-    //     </Button>
-    //     })
-    //   }
-    // }
-
-
-    // { (keys && keys.length && inputboxes) && inputboxes}
     return (
       <>
         <Icon name='refresh' size='huge' onClick={this.rotateVis}/>

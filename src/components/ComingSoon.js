@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-export class ComingSoon extends Component {
+export default class ComingSoon extends Component {
   constructor(props) {
     super(props);
     this.state = {

@@ -10,7 +10,7 @@ const CONTENT = {
   filters: {}
 }
 
-export class HideTitles extends Component {
+export default class HideTitles extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,8 +30,7 @@ export class HideTitles extends Component {
   }
 
   handleChange = (e, { value }) => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages))
-    var {options} = messages.dashboard
+    var options = JSON.parse(JSON.stringify(this.props.options))
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
@@ -40,14 +39,13 @@ export class HideTitles extends Component {
         options[kys[i]].title_hidden = false;
       }
     }
-    this.props.updateApp({messages: messages})
+    this.props.updateApp({options: options})
   } 
 
   handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
 
   selectRandom = () => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages));
-    var {options} = messages.dashboard
+    var options = JSON.parse(JSON.stringify(this.props.options));
     var value = [sample(Object.keys(options))]
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
@@ -57,7 +55,7 @@ export class HideTitles extends Component {
         options[kys[i]].title_hidden = false;
       }
     }
-    this.props.updateApp({messages: messages})
+    this.props.updateApp({options: options})
   }
 
   toggleSearch = (e) => this.setState({ search: e.target.checked })
@@ -77,7 +75,7 @@ export class HideTitles extends Component {
   
   render() {
     const {props} = this
-    const tiles = (props.messages && props.messages.dashboard && props.messages.dashboard.options) ? props.messages.dashboard.options : []
+    const tiles = (props && props.options) ? props.options : []
     const {hidden_tiles} = this.state
     const { multiple, isFetching, search } = this.state
 

@@ -10,7 +10,7 @@ const CONTENT = {
   filters: {}
 }
 
-export class ChangeTitles extends Component {
+export default class ChangeTitles extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -27,8 +27,7 @@ export class ChangeTitles extends Component {
   }
 
   handleChange = (e, { value }) => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages))
-    var {options} = messages.dashboard
+    var options = JSON.parse(JSON.stringify(this.props.options))
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
@@ -37,7 +36,7 @@ export class ChangeTitles extends Component {
         options[kys[i]].title_hidden = false;
       }
     }
-    this.props.updateApp({messages: messages})
+    this.props.updateApp({options: options})
   } 
 
   handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
@@ -89,9 +88,9 @@ export class ChangeTitles extends Component {
     tiles[data.id].title = data.value
     this.setState({tiles: tiles})
 
-    var messages = JSON.parse(JSON.stringify(this.props.messages));
-    messages.dashboard.options[data.id].title = data.value
-    this.props.updateApp({messages: messages});
+    var options = JSON.parse(JSON.stringify(this.props.options));
+    options[data.id].title = data.value
+    this.props.updateApp({options: options});
   }
   
   render() {

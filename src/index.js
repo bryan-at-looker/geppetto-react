@@ -1,21 +1,32 @@
-import React, {Component} from 'react'
+import React, {Component, Suspense} from 'react'
 import ReactDOM from 'react-dom';
-import { api31Call } from './helpers';
-import {LookerFrame} from './components/LookerFrame'
-import {DashboardRoute} from './components/DashboardRoute'
+// import { api31Call } from './helpers';
+// import {LookerFrame} from './components/LookerFrame'
+// import {DashboardRoute} from './components/DashboardRoute'
 import {Navigation} from './components/Navigation'
 import "semantic-ui-css/semantic.min.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { HomeRoute } from './HomeRoute';
-import { ComingSoon } from './components/ComingSoon';
-import { ExploreRoute } from './components/ExploreRoute';
-import { RandomTheme } from './components/RandomThemeRoute';
-import { HideTitles } from './components/HideTitlesRoute';
-import { TabbedDashboards } from './components/TabbedDashboardsRoute';
-import { ChangeVisualization } from './components/ChangeVisualizationRoute';
-import { ChangeTitles } from './components/ChangeTitlesRoute';
-import { HideTiles } from './components/HideTilesRoute';
-import { UpdateText } from './components/UpdateTextRoute';
+
+const HomeRoute = React.lazy(() => import('./components/HomeRoute'));
+const ComingSoon = React.lazy(() => import('./components/ComingSoon'));
+const HideTitles = React.lazy(() => import('./components/HideTitlesRoute'));
+const ChangeTitles = React.lazy(() => import('./components/ChangeTitlesRoute'));
+const HideTiles = React.lazy(() => import('./components/HideTilesRoute'));
+const UpdateText = React.lazy(() => import('./components/UpdateTextRoute'))
+const SelectVisualization = React.lazy(() => import('./components/SelectVisualizationRoute'))
+
+
+// import { HomeRoute } from './HomeRoute';
+// import { ComingSoon } from './components/ComingSoon';
+// import { ExploreRoute } from './components/ExploreRoute';
+// import { RandomTheme } from './components/RandomThemeRoute';
+// import { HideTitles } from './components/HideTitlesRoute';
+// import { TabbedDashboards } from './components/TabbedDashboardsRoute';
+// import { ChangeVisualization } from './components/ChangeVisualizationRoute';
+// import { ChangeTitles } from './components/ChangeTitlesRoute';
+// import { HideTiles } from './components/HideTilesRoute';
+// import { UpdateText } from './components/UpdateTextRoute';
+// import { SelectVisaulization } from './components/SelectVisualizationRoute';
 
 
 
@@ -37,46 +48,37 @@ class App extends Component {
   updateApp = (object) => { this.setState(object)}
   
   componentWillMount() {
-    api31Call('GET', '/spaces/lookml/dashboards')
-    .then(dashboards =>{
-      const dbs = dashboards.map(db =>{
-        return {
-          id: db.id,
-          type: 'dashboard',
-          name: db.title
-        }
-      })
-      this.setState({dashboards: dbs });
-    })
   }
   
   render() {
-    const {content, dashboards, messages} = this.state
+    const {content, dashboards, messages, options} = this.state
     
     return (
       <>
         
         <Router basename={'/applications/'+window.lookerMetadata.app.id}>
-          <Navigation updateApp={this.updateApp}></Navigation>
-          <Route path='/' exact component={HomeRoute} />            
-          <Route path="/dashboards"
-          render={() => <DashboardRoute content={content} dashboards={dashboards} messages={messages} updateApp={this.updateApp}/>} />
-          <Route path='/looks'  component={ComingSoon} />      
-          <Route path='/explores' component={ComingSoon} />      
-          <Route path='/randomtheme'
-          render={() => <RandomTheme content={content} messages={messages} updateApp={this.updateApp}/>} />
-          <Route path='/hidetitles'
-          render={() => <HideTitles  messages={messages} updateApp={this.updateApp}/>} />
-          <Route path='/hidetiles'
-          render={() => <HideTiles  messages={messages} updateApp={this.updateApp}/>} />
-          <Route path='/changetitles'
-          render={() => <ChangeTitles  messages={messages} updateApp={this.updateApp}/>} />
-          <Route path='/updatetext'
-          render={() => <UpdateText  messages={messages} updateApp={this.updateApp}/>} />
-          <Route path='/tabbeddashboards'
-          render={() => <TabbedDashboards content={content} messages={messages} updateApp={this.updateApp}/>} />
-          <Route path='/changeviz'
-          render={() => <ChangeVisualization messages={messages} updateApp={this.updateApp}/>} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Navigation updateApp={this.updateApp}></Navigation>
+            <Route path='/' exact component={HomeRoute} />            
+            <Route path="/dashboards"
+            render={() => <DashboardRoute content={content} dashboards={dashboards} messages={messages} updateApp={this.updateApp}/>} />
+            <Route path='/looks'  component={ComingSoon} />      
+            <Route path='/explores' component={ComingSoon} />      
+            <Route path='/randomtheme'
+            render={() => <RandomTheme content={content} messages={messages} updateApp={this.updateApp}/>} />
+            <Route path='/hidetitles'
+            render={() => <HideTitles  options={options}  messages={messages} updateApp={this.updateApp}/>} />
+            <Route path='/hidetiles'
+            render={() => <HideTiles  options={options}  messages={messages} updateApp={this.updateApp}/>} />
+            <Route path='/changetitles'
+            render={() => <ChangeTitles  options={options}  messages={messages} updateApp={this.updateApp}/>} />
+            <Route path='/updatetext'
+            render={() => <UpdateText  options={options}  messages={messages} updateApp={this.updateApp}/>} />
+            <Route path='/tabbeddashboards'
+            render={() => <TabbedDashboards content={content} messages={messages} updateApp={this.updateApp}/>} />
+            <Route path='/selectviz'
+            render={() => <SelectVisualization options={options} messages={messages} updateApp={this.updateApp}/>} />
+          </Suspense>
         </Router>
       </>
       )

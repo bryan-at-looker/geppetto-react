@@ -71,6 +71,10 @@ export class LookerFrame extends Component {
             const data = JSON.parse(event.data)
             if (data) {
               console.log({type: data.type, data: data})
+              if (data.type == 'dashboard:run:complete') {
+                console.log(data.dashboard.options)
+                this.props.updateApp({options: data.dashboard.options})
+              }
               if (data.dashboard) { this.messageDashboard(data.dashboard) }
               if (data.page) { this.messagePage(data.page) }
               if (data.height) { this.messageHeight(data.height) }
@@ -86,21 +90,22 @@ export class LookerFrame extends Component {
 
   componentDidUpdate(prevProps,pstate) {
     const {props} = this;
-    if ( prevProps && prevProps.messages && prevProps.messages.dashboard && prevProps.messages.dashboard.options
-      &&  props &&  props.messages &&  props.messages.dashboard &&  props.messages.dashboard.options) {
+    if ( prevProps && prevProps.options 
+      &&  props &&  props.options && props.options != {}) {
 
-      const poptions = prevProps.messages.dashboard.options
-      const {options} = props.messages.dashboard
-      const {dashboard} = props.messages
+      const poptions = prevProps.options
+      const {options} = props
 
       // console.log({options: options, poptions: poptions})
-      if (!isEqual(poptions, options)) {
-        var my_request = objectDeepDiff(options, poptions)
-        var my_iframe = document.getElementById(FRAME_ID);
-        my_request.type = 'dashboard:options:set'
-
-        console.log(my_request)
-        my_iframe.contentWindow.postMessage(JSON.stringify(my_request), INSTANCE);
+      if (options && !isEmpty(options) && poptions && !isEmpty(poptions)) {
+        if (!isEqual(poptions, options)) {
+          const my_request = objectDeepDiff(options, poptions)
+          const my_iframe = document.getElementById(FRAME_ID);
+          my_request.type = 'dashboard:options:set'
+  
+          console.log(my_request)
+          my_iframe.contentWindow.postMessage(JSON.stringify(my_request), INSTANCE);
+        }
       }
     }
   }
@@ -140,15 +145,15 @@ const urlBuilder = (id, type, filters) => {
 }
 
 const objectDeepDiff = (data, oldData) => {
-  const record = {};
+  var record = {};
   Object.keys(data).forEach((key) => {
-    // Checks that isn't an object and isn't equal
-    if (!(typeof data[key] === "object" && _.isEqual(data[key], oldData[key]))) {
-      record[key] = data[key];
-    }
     // If is an object, and the object isn't equal
-    if ((typeof data[key] === "object" && !_.isEqual(data[key], oldData[key]))) {
+    if ((typeof data[key] === "object" && !isEqual(data[key], oldData[key]))) {
       record[key] = objectDeepDiff(data[key], oldData[key]);
+    }
+    // Checks that isn't an object and isn't equal
+    if (!(typeof data[key] === "object" && isEqual(data[key], oldData[key]))) {
+      record[key] = data[key];
     }
   });
   return record;

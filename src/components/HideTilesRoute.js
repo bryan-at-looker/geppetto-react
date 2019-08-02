@@ -10,7 +10,7 @@ const CONTENT = {
   filters: {}
 }
 
-export class HideTiles extends Component {
+export default class HideTiles extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,8 +30,7 @@ export class HideTiles extends Component {
   }
 
   handleChange = (e, { value }) => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages))
-    var {options} = messages.dashboard
+    var options = JSON.parse(JSON.stringify(this.props.options))
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
@@ -40,7 +39,7 @@ export class HideTiles extends Component {
         options[kys[i]].visible = false;
       }
     }
-    this.props.updateApp({messages: messages})
+    this.props.updateApp({options: options})
   } 
 
   handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
@@ -51,11 +50,7 @@ export class HideTiles extends Component {
     var value = [sample(Object.keys(options))]
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
-      if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
-      } else {
-        options[kys[i]].visible = false;
-      }
+      options[kys[i]].visible = (value.indexOf(kys[i]) > -1)
     }
     this.props.updateApp({messages: messages})
   }
@@ -77,7 +72,7 @@ export class HideTiles extends Component {
   
   render() {
     const {props} = this
-    const tiles = (props.messages && props.messages.dashboard && props.messages.dashboard.options) ? props.messages.dashboard.options : []
+    const tiles = (props.options) ? props.options : []
     const {hidden_tiles} = this.state
     const { multiple, isFetching, search } = this.state
 

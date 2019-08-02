@@ -10,7 +10,7 @@ const CONTENT = {
   filters: {}
 }
 
-export class UpdateText extends Component {
+export default class UpdateText extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,8 +30,7 @@ export class UpdateText extends Component {
   }
 
   handleChange = (e, { value }) => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages))
-    var {options} = messages.dashboard
+    var options = JSON.parse(JSON.stringify(this.props.options))
     const kys = Object.keys(options)
     for (var i=0; i<kys.length; i++) {
       if (value.indexOf(kys[i]) > -1) {
@@ -40,7 +39,7 @@ export class UpdateText extends Component {
         options[kys[i]].visible = false;
       }
     }
-    this.props.updateApp({messages: messages})
+    this.props.updateApp({options: options})
   } 
 
   handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
@@ -78,10 +77,9 @@ export class UpdateText extends Component {
   changeBody = (event, data) => {
     var {value} = data
     this.setState({text: value})
-    var messages = JSON.parse(JSON.stringify(this.props.messages));
-    messages.dashboard.options[data.id].vis_config.body_text_as_html = value
-    this.props.updateApp({messages: messages});
-    console.log(messages.dashboard.options)
+    var options = JSON.parse(JSON.stringify(this.props.options));
+    options[data.id].vis_config.body_text_as_html = value
+    this.props.updateApp({options: options});
   }
   
   render() {

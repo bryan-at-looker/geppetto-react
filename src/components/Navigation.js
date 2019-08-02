@@ -13,7 +13,7 @@ export class Navigation extends Component {
         ["Change Titles","/changetitles"],
         ["Hide / Show Tiles", "/hidetiles"],
         ["Update Text","/updatetext"],
-        ["Change Viz","/changeviz"],
+        ["Select Viz",'/selectviz'],
       ]
     }
   }
@@ -26,8 +26,8 @@ export class Navigation extends Component {
 
   handleItemClick = (e, data ) => { 
     this.setState({ activeItem: data.to })
-    this.props.updateApp({messages: {}})
-  }
+    this.props.updateApp({messages: {}, options: {}})
+  } 
 
   menuItem = (items) => {
     var item_map = items.map(item => {
