@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import { api31Call } from '../helpers';
 import { Icon, Button } from 'semantic-ui-react'
-import { LookerFrame } from './LookerFrame2';
+import { LookerFrame } from './LookerFrame';
 import './SelectVisualizationRoute.css'
 
 const VIS_TYPES = [

@@ -9,10 +9,9 @@ export class Navigation extends Component {
     this.state = {
       items: [
         ["Home", "/"],
-        // ["Hide / Show Titles", "/hidetitles"],
-        // ["Change Titles","/changetitles"],
-        ["Hide / Show Tiles", "/hidetiles"],
-        // ["Update Text","/updatetext"],
+        ["Change Titles","/changetitles"],
+        ["Hide \/ Show Tiles", "/hidetiles"],
+        ["Update Text","/updatetext"],
         ["Select Viz",'/selectviz'],
         ["tester","tester"]
       ]

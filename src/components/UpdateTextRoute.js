@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import { api31Call } from '../helpers';
-import { Icon, Dropdown, Button, TextArea, Popup } from 'semantic-ui-react'
+import { Form, TextArea, Input } from 'semantic-ui-react'
 import { LookerFrame } from './LookerFrame';
 import {sample, filter} from 'lodash'
+
+import './UpdateTextRoute.css'
 
 const CONTENT = {
   id: '18',
@@ -13,109 +14,109 @@ const CONTENT = {
 export default class UpdateText extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isFetching: false,
-      multiple: true,
-      search: true,
-      searchQuery: null
-    }
+    this.state = {}
   }
 
-  messageDashboard = (dashboard) => {
-    var {messages} = this.props
-    if (!isEqual(messages.dashboard, dashboard)) {
-      messages.dashboard = dashboard
-      this.props.updateApp({messages: messages})
-    }
-  }
-
-  handleChange = (e, { value }) => {
-    var options = JSON.parse(JSON.stringify(this.props.options))
-    const kys = Object.keys(options)
-    for (var i=0; i<kys.length; i++) {
-      if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
-      } else {
-        options[kys[i]].visible = false;
-      }
-    }
-    this.props.updateApp({options: options})
-  } 
-
-  handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
-
-  selectRandom = () => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages));
-    var {options} = messages.dashboard
-    var value = [sample(Object.keys(options))]
-    const kys = Object.keys(options)
-    for (var i=0; i<kys.length; i++) {
-      if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
-      } else {
-        options[kys[i]].visible = false;
-      }
-    }
-    this.props.updateApp({messages: messages})
-  }
-
-  toggleSearch = (e) => this.setState({ search: e.target.checked })
-
-  toggleMultiple = (e) => {
-    const { value } = this.state
-    const multiple = e.target.checked
-    // convert the value to/from an array
-    const newValue = multiple ? _.compact([value]) : _.head(value) || ''
-    this.setState({ multiple, value: newValue })
-  }
-
-  componentWillMount() {
-
-  }
+  componentWillMount() {}
   componentDidMount() {}
 
-  changeBody = (event, data) => {
-    var {value} = data
-    this.setState({text: value})
-    var options = JSON.parse(JSON.stringify(this.props.options));
-    options[data.id].vis_config.body_text_as_html = value
-    this.props.updateApp({options: options});
+  componentDidUpdate(pProps,pState) {
+    const pOptions = pProps.options
+    const options = this.props.options
+    if (!pOptions && options) {
+      this.setState({
+        original_options: options,
+        options: options
+      })
+    }
+  }
+
+  onChange = ( event, data ) => {
+    const el_id = data.id.split('::')[0]
+    const key = data.id.split('::')[1]
+    var options = JSON.parse(JSON.stringify(this.state.options));
+    var elements = options.elements;
+
+    elements[el_id]['vis_config'][key] = data.value;
+
+    this.setState({options: options})
+    this.props.updateApp({options: options})
+    
   }
   
   render() {
-    const {props} = this
-    const tiles = (props.messages && props.messages.dashboard && props.messages.dashboard.options) ? props.messages.dashboard.options : []
-    const {hidden_tiles} = this.state
-    const { multiple, isFetching, search } = this.state
 
-    const tileArray = Object.keys(tiles).map(tile => {
-      return Object.assign({ id: tile}, tiles[tile])
-    })
+    const {options} = this.state
+    const elements = (options && options.elements) ? options.elements : undefined
 
-    const options = tileArray.map(tile => {
-      return { key: tile.id, text: tile.title, value: tile.id}
-    })
+    const el_ids = (elements) ? Object.keys(elements) : [];
 
-    const text_tiles = filter(tileArray, o => { 
-        return ( o.vis_config && o.vis_config.type && o.vis_config.type == 'text' )
-      }).map((tile) => {
-        console.log(tile)
-        return (
-          <Popup
-            on='click'
-            key={tile.id}
-            onClick={() => {this.setState({text: tile.vis_config.body_text_as_html}) }}
-            trigger={<Button>Tile: {tile.id}</Button>}>
-          <TextArea id={tile.id} onChange={this.changeBody} value={this.state.text}></TextArea>
-          </Popup>
-        )
-    })
+    var text_tile_els = [];
+    var text_inputs = <></>
+
+    if (el_ids.length > 0) {
+
+      el_ids.forEach(el => {
+        if (elements[el] && elements[el].vis_config && elements[el].vis_config.type && elements[el].vis_config.type == 'text') {
+          text_tile_els.push(el);
+        }
+      })
+      if ( text_tile_els.length > 0 ) {
+        text_inputs = text_tile_els.map(el => {
+
+          return (
+            <TextFieldForm key={el} el={el} elements={elements} onChange={this.onChange}></TextFieldForm>
+          )
+        })
+      }
+    }
 
     return (
       <>
-        {text_tiles}
-        <LookerFrame content={CONTENT} {...props}></LookerFrame>
+        <div className = 'form-left'>
+          { (text_tile_els.length > 0 ) && text_inputs }
+        </div>
+        <div className = 'looker-right'>
+          <LookerFrame content={CONTENT} options={this.props.options} updateApp={this.props.updateApp}></LookerFrame>
+        </div>
       </>
     )
   }
+}
+function TextFieldForm (props) {
+  const el = props.el
+  const elements = props.elements
+  return (
+    <>
+    <br/>
+    <div >
+      <h3 >Element: {el}</h3>
+      <Form >
+        <Form.Group key={el} widths='equal'>
+          <Form.Field
+            id={el+'::'+'title_text'}
+            control={Input}
+            label='Title'
+            value={elements[el].vis_config.title_text}
+            onChange={props.onChange}
+          />
+          <Form.Field
+            id={el+'::'+'subtitle_text'}
+            control={Input}
+            label='Subtitle'
+            value={elements[el].vis_config.subtitle_text}
+            onChange={props.onChange}
+          />
+        </Form.Group>
+        <Form.Field
+          id={el+'::'+'body_text_as_html'}
+          control={TextArea}
+          label='Body'
+          value={elements[el].vis_config.body_text_as_html}
+          onChange={props.onChange}
+        />
+      </Form>
+    </div>
+    </>
+  )
 }

@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-import { api31Call } from '../helpers';
-import { Icon, Dropdown, Button, Popup, Input } from 'semantic-ui-react'
+import { Icon, Input } from 'semantic-ui-react'
 import { LookerFrame } from './LookerFrame';
-import {sample, filter} from 'lodash'
 
 const CONTENT = {
   id: '19',
@@ -13,125 +11,60 @@ const CONTENT = {
 export default class ChangeTitles extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      editing: false
-    }
+    this.state = {}
   }
-
-  messageDashboard = (dashboard) => {
-    var {messages} = this.props
-    if (!isEqual(messages.dashboard, dashboard)) {
-      messages.dashboard = dashboard
-      this.props.updateApp({messages: messages})
-    }
-  }
-
-  handleChange = (e, { value }) => {
-    var options = JSON.parse(JSON.stringify(this.props.options))
-    const kys = Object.keys(options)
-    for (var i=0; i<kys.length; i++) {
-      if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].title_hidden = true;
-      } else {
-        options[kys[i]].title_hidden = false;
-      }
-    }
-    this.props.updateApp({options: options})
-  } 
 
   handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
-
-  selectRandom = () => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages));
-    var {options} = messages.dashboard
-    var value = [sample(Object.keys(options))]
-    const kys = Object.keys(options)
-    for (var i=0; i<kys.length; i++) {
-      if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].title_hidden = true;
-      } else {
-        options[kys[i]].title_hidden = false;
-      }
-    }
-    this.props.updateApp({messages: messages})
-  }
-
-  toggleSearch = (e) => this.setState({ search: e.target.checked })
-
-  toggleMultiple = (e) => {
-    const { value } = this.state
-    const multiple = e.target.checked
-    // convert the value to/from an array
-    const newValue = multiple ? _.compact([value]) : _.head(value) || ''
-    this.setState({ multiple, value: newValue })
-  }
-
-  componentWillMount() {
-
-  }
+  componentWillMount() {}
   componentDidMount() {}
 
-  edit = (tiles,editing) => {
-
-    if (!editing) {
-      this.setState({
-        editing: !editing,
-        tiles: tiles
-      })
-    } else {
-      this.setState({editing: !editing})
-    }
+  changeText = (event, data) => {
+    var options = JSON.parse(JSON.stringify(this.state.options));
+    var elements = options.elements
+    elements[data.id].title = data.value
+    this.setState({options: options})
+    this.props.updateApp({options: options});
   }
 
-  changeText = (event, data) => {
-    var {tiles} = this.state
-    tiles[data.id].title = data.value
-    this.setState({tiles: tiles})
+  onReset = ( event, data ) => { 
+    this.setState({options: this.state.original_options})
+    this.props.updateApp({options: this.state.original_options}); 
+  }
 
-    var options = JSON.parse(JSON.stringify(this.props.options));
-    options.elements[data.id].title = data.value
-    this.props.updateApp({options: options});
+  componentDidUpdate(pProps,pState) {
+    const pOptions = pProps.options
+    const options = this.props.options
+    if (!pOptions && options) {
+      this.setState({
+        original_options: options,
+        options: options
+      })
+    }
   }
   
   render() {
-    const {props} = this
-    const tiles = ( props.options && props.options.elements ) ? props.options.elements : []
-    const {hidden_tiles, editing } = this.state
-    const { multiple, isFetching, search } = this.state
-
-    const tileArray = Object.keys(tiles).map(tile => {
-      return Object.assign({ id: tile}, tiles[tile])
-    })
-
-    const keys = Object.keys(tiles)
-
-    const options = tileArray.map(tile => {
-      return { key: tile.id, text: tile.title, value: tile.id}
-    })
-
-    const all_vises =  Object.keys(tiles).map(tile => {
-      return tiles[tile].vis_config.type || 'looker_table'
-    })
+    const elements = (this.state && this.state.options && this.state.options.elements) ? this.state.options.elements : undefined
 
     var inputboxes = <div></div>
-    console.log(tiles)
-    if (keys.length > 0 ) {
-      
-      inputboxes = keys.map(tile => {
+
+    const el_ids = (elements) ? Object.keys(elements) : [];
+    
+    if (elements && el_ids.length > 0 ) {    
+      inputboxes =  el_ids.map(el => {
         return   <Input
-        key = {tile}
-        id = {tile}
+        key = {el}
+        id = {el}
         onChange = {this.changeText}
-        value = {(this.state.tiles &&  this.state.tiles[tile] && this.state.tiles[tile].title) ? this.state.tiles[tile].title : '' }
+        value = { ( elements[el] &&  elements[el].title ) ? elements[el].title : '' }
       />
       })
     }
 
     return (
       <>
-      <Icon name="edit" size='huge' onClick={() => {this.edit(tiles,this.state.editing)}}></Icon>        
-      { (editing) && inputboxes} 
-        <LookerFrame content={CONTENT} {...props}></LookerFrame>
+      <Icon name='refresh' size='huge' onClick={this.onReset}/>
+      { (elements && el_ids.length>0 ) && inputboxes } 
+        <LookerFrame content={CONTENT} options={this.props.options} updateApp={this.props.updateApp}></LookerFrame>
       </>
     )
   }

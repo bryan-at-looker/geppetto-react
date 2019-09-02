@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import { api31Call } from '../helpers';
 import { Icon, Dropdown } from 'semantic-ui-react'
-import { LookerFrame } from './LookerFrame2';
+import { LookerFrame } from './LookerFrame';
 import {sample, filter} from 'lodash'
 
 
