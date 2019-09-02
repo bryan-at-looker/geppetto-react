@@ -3,6 +3,12 @@ import { Icon, Dropdown } from 'semantic-ui-react'
 import { LookerFrame } from './LookerFrame';
 import {sample, filter} from 'lodash'
 
+const CONTENT = {
+  id: '19',
+  type: 'dashboard',
+  filters: {}
+}
+
 
 export default class HideTiles extends Component {
   constructor(props) {
@@ -122,7 +128,7 @@ export default class HideTiles extends Component {
             disabled={isFetching}
             loading={isFetching}
           />
-        <LookerFrame options={options} updateApp={this.props.updateApp}></LookerFrame>
+        <LookerFrame content={CONTENT} options={options} updateApp={this.props.updateApp}></LookerFrame>
       </>
     )
   }

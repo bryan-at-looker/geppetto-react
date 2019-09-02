@@ -14,6 +14,12 @@ const VIS_TYPES = [
   'looker_grid',
 ]
 
+const CONTENT = {
+  id: '19',
+  type: 'dashboard',
+  filters: {}
+}
+
 export default class SelectVisualization extends Component {
   constructor(props) {
     super(props);
@@ -92,7 +98,7 @@ export default class SelectVisualization extends Component {
           {vis_buttons}
           <Icon disabled={disabled} name="refresh" size='large' onClick={this.onReset}></Icon>
         </div>
-        <LookerFrame options={options} updateApp={this.props.updateApp}></LookerFrame>
+        <LookerFrame content={CONTENT} options={options} updateApp={this.props.updateApp}></LookerFrame>
       </>
     )
   }

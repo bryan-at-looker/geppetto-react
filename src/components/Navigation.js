@@ -10,10 +10,11 @@ export class Navigation extends Component {
       items: [
         ["Home", "/"],
         ["Change Titles","/changetitles"],
-        ["Hide \/ Show Tiles", "/hidetiles"],
+        ['Hide / Show Tiles', "/hidetiles"],
         ["Update Text","/updatetext"],
         ["Select Viz",'/selectviz'],
-        ["tester","tester"]
+        ["Select Layouts",'/selectlayout'],
+        ["tester","/tester"]
       ]
     }
   }

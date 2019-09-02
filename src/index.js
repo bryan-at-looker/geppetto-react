@@ -10,6 +10,7 @@ const HideTiles = React.lazy(() => import('./components/HideTilesRoute'));
 const UpdateText = React.lazy(() => import('./components/UpdateTextRoute'))
 const Tester = React.lazy(() => import('./components/tester'))
 const SelectVisualization = React.lazy(() => import('./components/SelectVisualizationRoute'))
+const SelectLayout = React.lazy(() => import('./components/SelectLayoutRoute'))
 
 
 class App extends Component {
@@ -55,6 +56,9 @@ class App extends Component {
             />
             <Route path='/updatetext'
               render={() => <UpdateText  options={options} updateApp={this.updateApp}/>} 
+            />
+            <Route path='/selectlayout'
+              render={() => <SelectLayout  options={options} updateApp={this.updateApp}/>} 
             />
           </Suspense>
         </Router>
