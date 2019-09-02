@@ -25,7 +25,9 @@ export class LookerFrame extends Component {
               console.log({type: data.type, data: data})
               if (data.type == 'dashboard:run:complete') {
                 console.log(data.dashboard.options)
-                this.props.updateApp({options: data.dashboard.options})
+                this.props.updateApp({options: data.dashboard.options, dashboard_filters: data.dashboard.dashboard_filters})
+              } else if ( data.type == 'dashboard:filters:changed') {
+                this.props.updateApp({ dashboard_filters: data.dashboard.dashboard_filters })
               }
             }
           }

@@ -14,6 +14,7 @@ export class Navigation extends Component {
         ["Update Text","/updatetext"],
         ["Select Viz",'/selectviz'],
         ["Select Layouts",'/selectlayout'],
+        ["Compare Measures",'/comparemeasures'],
         ["tester","/tester"]
       ]
     }
@@ -21,7 +22,7 @@ export class Navigation extends Component {
 
   handleItemClick = (e, data ) => { 
     this.setState({ activeItem: data.to })
-    this.props.updateApp({options: undefined})
+    this.props.updateApp({options: undefined, dashboard_filters: undefined})
   } 
 
   menuItem = (items) => {

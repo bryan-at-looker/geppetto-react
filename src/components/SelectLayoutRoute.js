@@ -66,7 +66,6 @@ export default class SelectLayout extends Component {
         }
       }
     })
-    console.log(options)
     this.props.updateApp({options: options})    
   }
 
@@ -205,7 +204,6 @@ export default class SelectLayout extends Component {
   }
 
   changeLayout = (event, {id}) => {
-    console.log('layout_'+id)
     this['layout_'+id]();
   }
 
