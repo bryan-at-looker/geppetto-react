@@ -99,7 +99,9 @@ export class LookerFrame extends Component {
       // console.log({options: options, poptions: poptions})
       if (options && !isEmpty(options) && poptions && !isEmpty(poptions)) {
         if (!isEqual(poptions, options)) {
+          console.log({options: options, poptions: poptions})
           const my_request = objectDeepDiff(options, poptions)
+          console.log(my_request)
           const my_iframe = document.getElementById(FRAME_ID);
           my_request.type = 'dashboard:options:set'
   

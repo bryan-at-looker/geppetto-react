@@ -31,14 +31,15 @@ export default class HideTitles extends Component {
 
   handleChange = (e, { value }) => {
     var options = JSON.parse(JSON.stringify(this.props.options))
-    const kys = Object.keys(options)
-    for (var i=0; i<kys.length; i++) {
-      if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].title_hidden = true;
+
+    const kys = Object.keys(options.elements)
+    kys.forEach(ky => {
+      if (value.indexOf(ky) > -1) {
+        options.elements[ky].title_hidden = true;
       } else {
-        options[kys[i]].title_hidden = false;
+        options.elements[ky].title_hidden = false;
       }
-    }
+    })
     this.props.updateApp({options: options})
   } 
 
@@ -75,12 +76,12 @@ export default class HideTitles extends Component {
   
   render() {
     const {props} = this
-    const tiles = (props && props.options) ? props.options : []
+    const elements = (props && props.options && props.options.elements) ? props.options.elements : []
     const {hidden_tiles} = this.state
     const { multiple, isFetching, search } = this.state
 
-    const tileArray = Object.keys(tiles).map(tile => {
-      return Object.assign({ id: tile}, tiles[tile])
+    const tileArray = Object.keys(elements).map(tile => {
+      return Object.assign({ id: tile}, elements[tile])
     })
 
     const options = tileArray.map(tile => {

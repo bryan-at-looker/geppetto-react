@@ -89,13 +89,13 @@ export default class ChangeTitles extends Component {
     this.setState({tiles: tiles})
 
     var options = JSON.parse(JSON.stringify(this.props.options));
-    options[data.id].title = data.value
+    options.elements[data.id].title = data.value
     this.props.updateApp({options: options});
   }
   
   render() {
     const {props} = this
-    const tiles = (props.messages && props.messages.dashboard && props.messages.dashboard.options) ? props.messages.dashboard.options : []
+    const tiles = ( props.options && props.options.elements ) ? props.options.elements : []
     const {hidden_tiles, editing } = this.state
     const { multiple, isFetching, search } = this.state
 

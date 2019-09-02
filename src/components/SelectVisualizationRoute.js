@@ -1,14 +1,8 @@
 import React, {Component} from 'react';
 import { api31Call } from '../helpers';
 import { Icon, Button } from 'semantic-ui-react'
-import { LookerFrame } from './LookerFrame';
+import { LookerFrame } from './LookerFrame2';
 import './SelectVisualizationRoute.css'
-
-const CONTENT = {
-  id: '17',
-  type: 'dashboard',
-  filters: {}
-}
 
 const VIS_TYPES = [
   'looker_bar',
@@ -32,52 +26,61 @@ export default class SelectVisualization extends Component {
   componentDidMount() {}
 
   changeViz = (event, data) => {
-    if (!this.state.options) { this.setState({options: this.props.options})}
+    
+    var options = JSON.parse(JSON.stringify(this.state.original_options));
+    var elements = options.elements;
 
-    var options = JSON.parse(JSON.stringify(this.props.options));
-    Object.keys(options).forEach(el => {
-      if (options && options[el] && options[el].vis_config) {
-        options[el].vis_config.type = data.id
+
+    Object.keys(elements).forEach(el => {
+      if (elements && elements[el] && elements[el].vis_config && elements[el].vis_config.type) {
+        elements[el].vis_config.type = data.id
       }
+
       this.props.updateApp({options: options})
     });
   }
 
-  resetViz = () => {
-    if (!this.state.options) { 
-      this.setState({options: this.props.options})
-    } else {
-      this.props.updateApp({options: this.state.options})
-    }
-    
+  onReset = ( event, data ) => { 
+    this.props.updateApp({options: this.state.original_options}); 
   }
 
   rotateVis = () => {
-    if (!this.state.options) { this.setState({options: this.props.options})}
-    
-    var options = JSON.parse(JSON.stringify(this.props.options))
-    const copy_options = JSON.parse(JSON.stringify(options))
+    var options = JSON.parse(JSON.stringify(this.props.options));
+    var elements = options.elements;
+    var copy_options = JSON.parse(JSON.stringify(elements));
 
-    const elements = Object.keys(options);
+    const el_ids = Object.keys(elements);
 
-    elements.forEach((el,i) => {
-      if (i==elements.length-1) {
-        options[el].vis_config.type = copy_options[elements[0]].vis_config.type
+    el_ids.forEach((el,i) => {
+      if (i==el_ids.length-1) {
+        elements[el].vis_config.type = copy_options[el_ids[0]].vis_config.type
       } else {
-        options[el].vis_config.type = copy_options[elements[i+1]].vis_config.type
+        elements[el].vis_config.type = copy_options[el_ids[i+1]].vis_config.type
       }
     })
     this.props.updateApp({options: options})
   } 
+
+  componentDidUpdate(pProps,pState) {
+    const pOptions = pProps.options
+    const options = this.props.options
+    if (!pOptions && options) {
+      this.setState({
+        original_options: options
+      })
+    }
+  }
   
   
   render() {
-    const {props} = this
+    const {options} = this.props
+    const disabled = (!options)
     const vis_buttons = VIS_TYPES.map(vis=>{
       return (
       <Button
       key={vis}
       id={vis}
+      disabled={disabled}
       onClick={this.changeViz}
       >{vis}
       </Button>)
@@ -86,11 +89,11 @@ export default class SelectVisualization extends Component {
     return (
       <>
         <div className="center">
-          <Icon name='random' size='large' onClick={this.rotateVis}/>
+          <Icon disabled={disabled} name='random' size='large' onClick={this.rotateVis}/>
           {vis_buttons}
-          <Icon name="refresh" size='large' onClick={this.resetViz}></Icon>
+          <Icon disabled={disabled} name="refresh" size='large' onClick={this.onReset}></Icon>
         </div>
-        <LookerFrame  content={CONTENT} {...props}></LookerFrame>
+        <LookerFrame options={options} updateApp={this.props.updateApp}></LookerFrame>
       </>
     )
   }

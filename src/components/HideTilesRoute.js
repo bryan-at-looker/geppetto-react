@@ -1,14 +1,9 @@
 import React, {Component} from 'react';
 import { api31Call } from '../helpers';
 import { Icon, Dropdown } from 'semantic-ui-react'
-import { LookerFrame } from './LookerFrame';
+import { LookerFrame } from './LookerFrame2';
 import {sample, filter} from 'lodash'
 
-const CONTENT = {
-  id: '17',
-  type: 'dashboard',
-  filters: {}
-}
 
 export default class HideTiles extends Component {
   constructor(props) {
@@ -21,38 +16,42 @@ export default class HideTiles extends Component {
     }
   }
 
-  messageDashboard = (dashboard) => {
-    var {messages} = this.props
-    if (!isEqual(messages.dashboard, dashboard)) {
-      messages.dashboard = dashboard
-      this.props.updateApp({messages: messages})
-    }
-  }
-
   handleChange = (e, { value }) => {
-    var options = JSON.parse(JSON.stringify(this.props.options))
-    const kys = Object.keys(options)
-    for (var i=0; i<kys.length; i++) {
-      if (value.indexOf(kys[i]) > -1) {
-        options[kys[i]].visible = true;
-      } else {
-        options[kys[i]].visible = false;
-      }
-    }
+    var {original_options} = this.state;
+    var options = JSON.parse(JSON.stringify(original_options))
+         
+    var new_layout = options.layouts
+
+    new_layout.forEach(layout => {
+      layout.dashboard_layout_components = filter(layout.dashboard_layout_components, 
+        (o) => { return value.indexOf( String(o.dashboard_element_id) ) == -1 
+      })
+    })
+
+    this.setState({removed: value})
     this.props.updateApp({options: options})
+    
   } 
 
   handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
 
-  selectRandom = () => {
-    var messages = JSON.parse(JSON.stringify(this.props.messages));
-    var {options} = messages.dashboard
-    var value = [sample(Object.keys(options))]
-    const kys = Object.keys(options)
-    for (var i=0; i<kys.length; i++) {
-      options[kys[i]].visible = (value.indexOf(kys[i]) > -1)
-    }
-    this.props.updateApp({messages: messages})
+  selectRandom = () => { 
+    var {original_options} = this.state;
+    var options = JSON.parse(JSON.stringify(original_options))
+
+    var value = [ sample(this.state.el_ids) ]
+         
+    var new_layout = options.layouts
+
+    new_layout.forEach(layout => {
+      layout.dashboard_layout_components = filter(layout.dashboard_layout_components, 
+        (o) => { return value.indexOf( String(o.dashboard_element_id) ) == -1 
+      })
+    })
+
+    this.setState({removed: value })  
+    this.props.updateApp({options: options})
+    
   }
 
   toggleSearch = (e) => this.setState({ search: e.target.checked })
@@ -69,43 +68,62 @@ export default class HideTiles extends Component {
 
   }
   componentDidMount() {}
+
+  componentDidUpdate(pProps,pState) {
+    const pOptions = pProps.options
+    const options = this.props.options
+    if (!pOptions && options) {
+      this.setState({
+        original_options: options,
+        el_ids: Object.keys(options.elements),
+        removed: []
+      })
+    }
+  }
+
+  onReset = ( event, data ) => { 
+    this.setState({removed: []})
+    this.props.updateApp({options: this.state.original_options}); 
+  }
   
   render() {
-    const {props} = this
-    const tiles = (props.options) ? props.options : []
-    const {hidden_tiles} = this.state
+    const {el_ids, original_options, removed} = this.state
     const { multiple, isFetching, search } = this.state
+    const {options} = this.props
+    const elements = (original_options && original_options.elements) ? original_options.elements : {};
 
-    const tileArray = Object.keys(tiles).map(tile => {
-      return Object.assign({ id: tile}, tiles[tile])
-    })
-
-    const options = tileArray.map(tile => {
-      return { key: tile.id, text: tile.title, value: tile.id}
-    })
-
-    const value = filter(tileArray, o => { 
-        return o.visible 
-      }).map(tile => {
-        return tile.id
-    })
+    var list = [];
+    var value = [];
+    if (elements && el_ids && removed) {
+      list = el_ids.map(el => {
+        return {
+          key: el,
+          text: elements[el].title || el,
+          value: el
+        }
+      })
+      value = el_ids.forEach(el => {
+        if (removed.indexOf(el) == -1) { return el }
+      })
+    }
 
     return (
       <>
         <Icon name='random' size='huge' onClick={this.selectRandom}/>
+        <Icon name='refresh' size='huge' onClick={this.onReset}/>
         <Dropdown
             selection
             multiple={multiple}
             search={search}
-            options={options}
-            value={value}
-            placeholder='Hide These Titles'
+            options={list}
+            value={removed || []}
+            placeholder='Hide These Tiles'
             onChange={this.handleChange}
             onSearchChange={this.handleSearchChange}
             disabled={isFetching}
             loading={isFetching}
           />
-        <LookerFrame content={CONTENT} {...props}></LookerFrame>
+        <LookerFrame options={options} updateApp={this.props.updateApp}></LookerFrame>
       </>
     )
   }

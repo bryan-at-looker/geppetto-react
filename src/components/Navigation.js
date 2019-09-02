@@ -9,24 +9,19 @@ export class Navigation extends Component {
     this.state = {
       items: [
         ["Home", "/"],
-        ["Hide / Show Titles", "/hidetitles"],
-        ["Change Titles","/changetitles"],
+        // ["Hide / Show Titles", "/hidetitles"],
+        // ["Change Titles","/changetitles"],
         ["Hide / Show Tiles", "/hidetiles"],
-        ["Update Text","/updatetext"],
+        // ["Update Text","/updatetext"],
         ["Select Viz",'/selectviz'],
+        ["tester","tester"]
       ]
     }
   }
 
-  // ["Random theme", "/randomtheme"],
-  // ["Dashboards", "/dashboards"],
-  // ["Looks", "/looks"],
-  // ["Explores", "/explores"],
-  // ["Tabbed Dashboards","/tabbeddashboards"],
-
   handleItemClick = (e, data ) => { 
     this.setState({ activeItem: data.to })
-    this.props.updateApp({messages: {}, options: {}})
+    this.props.updateApp({options: undefined})
   } 
 
   menuItem = (items) => {
