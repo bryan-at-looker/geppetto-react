@@ -1,0 +1,12 @@
+.form-left {
+  padding-left: 15px;
+  width: 30%;
+  float: left;
+  height: 100%;
+}
+
+.looker-right {
+  width: 70%;
+  float: right;
+  height: 100%;
+}

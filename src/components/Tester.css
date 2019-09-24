@@ -1,0 +1,12 @@
+.ace-left {
+  padding-left: 15px;
+  width: 30%;
+  float: left;
+  height: calc(100vh - 200px);
+}
+
+.looker-right {
+  width: 70%;
+  float: right;
+  height: calc(100vh - 200px);
+}
