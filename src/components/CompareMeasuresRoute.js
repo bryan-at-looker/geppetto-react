@@ -12,14 +12,14 @@ const CONTENT = {
 }
 
 const HIDDEN_FIELDS = [
-  { label: 'Item Count', field: "order_items.count", table_calc: "count"},
-  { label: 'Average Sale Price', field: "order_items.average_sale_price", table_calc: "average_sale_price"},
-  { label: 'Average Gross Margin', field: "order_items.average_gross_margin", table_calc: "average_gross_margin"},
-  { label: 'Average Days to Process', field: "order_items.average_days_to_process", table_calc: "average_days_to_process", postive_bad: true},
-  { label: 'Return Rate', field: "order_items.return_rate", table_calc: "return_rate", postive_bad: true},
-  { label: 'Returned Count', field: "order_items.returned_count", table_calc: "returned_count", postive_bad: true},
-  { label: 'Total Gross Margin', field: "order_items.total_gross_margin", table_calc: "total_gross_margin"},
-  { label: 'Total Sale Price', field: "order_items.total_sale_price", table_calc: "total_sale_price"},
+  { label: 'Item Count', field: "order_items.count", table_calc: "count", positive_bad: false},
+  { label: 'Average Sale Price', field: "order_items.average_sale_price", table_calc: "average_sale_price", positive_bad: false},
+  { label: 'Average Gross Margin', field: "order_items.average_gross_margin", table_calc: "average_gross_margin", positive_bad: false},
+  { label: 'Average Days to Process', field: "order_items.average_days_to_process", table_calc: "average_days_to_process", positive_bad: true},
+  { label: 'Return Rate', field: "order_items.return_rate", table_calc: "return_rate", positive_bad: true},
+  { label: 'Returned Count', field: "order_items.returned_count", table_calc: "returned_count", positive_bad: true},
+  { label: 'Total Gross Margin', field: "order_items.total_gross_margin", table_calc: "total_gross_margin", positive_bad: false},
+  { label: 'Total Sale Price', field: "order_items.total_sale_price", table_calc: "total_sale_price", positive_bad: false},
 ]
 
 
@@ -80,7 +80,7 @@ export default class CompareMeasures extends Component {
       if (vis_config.type == 'single_value') {
         single_value_counter+=1;
         elements[el].title = ''
-        vis_config['comparison_reverse_colors'] = (findLast(HIDDEN_FIELDS,  (o) => {return single_value_labels[single_value_counter] == o.label })['postive_bad']) ? true : false
+        vis_config['comparison_reverse_colors'] = (findLast(HIDDEN_FIELDS,  (o) => {return single_value_labels[single_value_counter] == o.label })['positive_bad']) ? true : false
 
         vis_config.title = single_value_labels[single_value_counter];
         temp_hidden = filter(HIDDEN_FIELDS,  (o) => {return single_value_labels[single_value_counter] != o.label }).map( x => { return x.field });
