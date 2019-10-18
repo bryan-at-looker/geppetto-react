@@ -12,6 +12,7 @@ const Tester = React.lazy(() => import('./components/tester'))
 const SelectVisualization = React.lazy(() => import('./components/SelectVisualizationRoute'))
 const SelectLayout = React.lazy(() => import('./components/SelectLayoutRoute'))
 const CompareMeasures = React.lazy(() => import('./components/CompareMeasuresRoute'))
+const HiddenLayouts = React.lazy(() => import('./components/HiddenLayouts'))
 
 
 class App extends Component {
@@ -60,6 +61,9 @@ class App extends Component {
             />
             <Route path='/selectlayout'
               render={() => <SelectLayout  options={options} updateApp={this.updateApp}/>} 
+            />
+            <Route path='/hiddenlayouts'
+              render={() => <HiddenLayouts dashboard_filters={dashboard_filters}  options={options} updateApp={this.updateApp}/>} 
             />
             <Route path='/comparemeasures'
               render={() => <CompareMeasures dashboard_filters={dashboard_filters} options={options} updateApp={this.updateApp}/>} 

@@ -14,6 +14,7 @@ export class Navigation extends Component {
         ["Update Text","/updatetext"],
         ["Select Viz",'/selectviz'],
         ["Select Layouts",'/selectlayout'],
+        ["Hidden Layouts",'/hiddenlayouts'],
         ["Compare Measures",'/comparemeasures'],
         ["tester","/tester"]
       ]
